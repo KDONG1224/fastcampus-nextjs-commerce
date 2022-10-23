@@ -1,10 +1,49 @@
+import { css } from '@emotion/react';
 import { Button } from 'components';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
-import styles from '../styles/Home.module.css';
+import { useEffect, useRef, useState } from 'react';
+import styles from '../assets/styles/Home.module.css';
 
 const Home: NextPage = () => {
+  // notion
+  // const [products, setProducts] = useState<
+  //   { id: string; properties: { id: string }[] }[]
+  // >([]);
+
+  // prisma
+  const [products, setProducts] = useState<
+    { id: string; name: string; createdAt: string }[]
+  >([]);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleAddClick = () => {
+    if (inputRef.current == null || inputRef.current.value === '') {
+      alert('name을 넣어주세요.');
+      return;
+    }
+
+    fetch(`/api/add-item?name=${inputRef.current.value}`)
+      .then((res) => res.json())
+      .then((data) => alert(data.message));
+  };
+
+  // notion-client
+  // useEffect(() => {
+  //   fetch('api/get-items')
+  //     .then((res) => res.json())
+  //     .then((data) => setProducts(data.items));
+  // }, []);
+
+  // prisma-client
+  useEffect(() => {
+    fetch('api/get-products')
+      .then((res) => res.json())
+      .then((data) => setProducts(data.items));
+  }, []);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -18,41 +57,68 @@ const Home: NextPage = () => {
           Welcome to <a href="https://nextjs.org">Next.js!</a>
         </h1>
 
-        <Button />
+        <input
+          className="placeholder:italic placeholder:text-slate-400 block bg-white w-full border border-slate-300 rounded-md py-2 pl-3 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
+          ref={inputRef}
+          type="text"
+          placeholder="name"
+        />
+        <br />
+        <br />
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.tsx</code>
-        </p>
+        <button
+          css={css`
+            background-color: hotpink;
+            padding: 16px;
+            border-radius: 8px;
+          `}
+          onClick={handleAddClick}
+        >
+          Add Jacket 1
+        </button>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+        <br />
+        <br />
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+        <Button onClick={handleAddClick}>Add Jacket 2</Button>
 
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
+        <br />
+        <br />
+        <div>
+          <p>Product List</p>
+          {/* notion */}
+          {/* {products &&
+            products.map((item) => (
+              <div key={item.id}>
+                {JSON.stringify(item)}
+                {item.properties &&
+                  Object.entries(item.properties).map(([key, value]) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        fetch(
+                          `/api/get-detail?pageId=${item.id}&propertyId=${value.id}`
+                        )
+                          .then((res) => res.json())
+                          .then((data) => alert(JSON.stringify(data.detail)));
+                      }}
+                    >
+                      {key}
+                    </button>
+                  ))}
+                <br />
+                <br />
+              </div>
+            ))} */}
 
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+          {/* prisma */}
+          {products &&
+            products.map((item) => (
+              <div key={item.id}>
+                {item.name}
+                <span>{item.createdAt}</span>
+              </div>
+            ))}
         </div>
       </main>
 
