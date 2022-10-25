@@ -2,28 +2,29 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["referentialIntegrity"]
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
   referentialIntegrity = "prisma"
 }
 
 model categories {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   name String
 }
 
 model products {
-  id Int @id @default(autoincrement())
-  name String
-  image_url String?
+  id          Int      @id @default(autoincrement())
+  name        String
+  image_url   String?
   category_id Int
-  createdAt DateTime @default(now())
+  contents    String?
+  price       Int
+  createdAt   DateTime @default(now())
 
   @@index([category_id])
 }
-

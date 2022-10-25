@@ -4,11 +4,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 const prisma = new PrismaClient();
 
-async function getProducts(skip: number, take: number) {
+async function updateProduct(id: number, contents: string) {
   try {
-    const res = await prisma.products.findMany({
-      skip: skip,
-      take: take
+    const res = await prisma.products.update({
+      where: { id: id },
+      data: { contents: contents }
     });
 
     console.log('== res == : ', res);
@@ -28,15 +28,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { skip, take } = req.query;
-
-  if (skip == null || take == null) {
-    res.status(200).json({ message: 'no skip or take' });
+  const { id, contents } = JSON.parse(req.body);
+  if (id == null || contents == null) {
+    res.status(200).json({ message: 'no id or contents' });
     return;
   }
-
   try {
-    const products = await getProducts(Number(skip), Number(take));
+    const products = await updateProduct(Number(id), contents);
     res.status(200).json({ items: products, message: 'Success' });
   } catch (error) {
     res.status(200).json({ message: 'Failed' });

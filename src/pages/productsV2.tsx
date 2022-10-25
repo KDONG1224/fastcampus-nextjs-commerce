@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Carousel from 'nuka-carousel';
-import { sampleImages } from './products';
+
 import { css } from '@emotion/react';
+import { sampleImages } from './products/[id]';
 
 const ProductsV2 = () => {
   const [index, setIndex] = useState(0);
