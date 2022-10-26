@@ -3,10 +3,11 @@ import Image from 'next/image';
 import Carousel from 'nuka-carousel';
 
 import { css } from '@emotion/react';
-import { sampleImages } from 'pages/products';
+
 import { CustomEditor } from 'components';
 import { useRouter } from 'next/router';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import { sampleImages } from 'pages/productsV1';
 
 const ProductsV2Edit = () => {
   const [index, setIndex] = useState(0);

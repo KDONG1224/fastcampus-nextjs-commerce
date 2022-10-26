@@ -1,11 +1,8 @@
 import { products } from '@prisma/client';
 import { Button } from 'components';
+import { blurDataURL, TAKE_PAGE } from 'const/products';
 import Image from 'next/image';
 import React, { useCallback, useEffect, useState } from 'react';
-
-const TAKE_PAGE = 9;
-const blurDataURL =
-  'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mN8//HLfwYiAOOoQvoqBABbWyZJf74GZgAAAABJRU5ErkJggg==';
 
 const Products = () => {
   const [skip, setSkip] = useState(0);

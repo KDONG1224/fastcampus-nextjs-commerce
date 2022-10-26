@@ -4,11 +4,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 const prisma = new PrismaClient();
 
-async function getProducts(id: number) {
+async function getCategories() {
   try {
-    const res = await prisma.products.findUnique({
-      where: { id: id }
-    });
+    const res = await prisma.categories.findMany({});
 
     return res;
   } catch (error) {
@@ -25,13 +23,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  const { id } = req.query;
-
-  if (id == null) {
-    res.status(200).json({ message: 'no id' });
-  }
   try {
-    const products = await getProducts(Number(id));
+    const products = await getCategories();
     res.status(200).json({ items: products, message: 'Success' });
   } catch (error) {
     res.status(200).json({ message: 'Failed' });

@@ -1,44 +1,119 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { products } from '@prisma/client';
-import { Pagination } from '@mantine/core';
-
-const TAKE_PAGE = 9;
-const blurDataURL =
-  'data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mN8//HLfwYiAOOoQvoqBABbWyZJf74GZgAAAABJRU5ErkJggg==';
+import { categories, products } from '@prisma/client';
+import { Input, Pagination, SegmentedControl, Select } from '@mantine/core';
+import { blurDataURL, CATEGORY_NAME, FILTERS, TAKE_PAGE } from 'const';
+import { css } from '@emotion/react';
+import { IconSearch } from '@tabler/icons';
+import { useDebounce } from 'hooks';
+import { useQuery } from '@tanstack/react-query';
 
 const Products = () => {
   const [activePage, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [products, setProducts] = useState<products[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('-1');
+  const [selectedFilter, setSelectedFilter] = useState<string | null>(
+    FILTERS[0].value
+  );
+  const [keyword, setKeyword] = useState('');
 
-  useEffect(() => {
-    // products
-    fetch(`/api/get-products?skip=0&take=${TAKE_PAGE}`)
-      .then((res) => res.json())
-      .then((data) => setProducts(data.items));
+  const debouncedKeyword = useDebounce<string>(keyword);
 
-    // count
-    fetch(`/api/get-products-count`)
-      .then((res) => res.json())
-      .then((data) => setTotal(Math.ceil(data.items / TAKE_PAGE)));
-  }, []);
+  const { data: products } = useQuery<
+    { items: products[] },
+    unknown,
+    products[]
+  >(
+    [
+      `/api/get-products?skip=${
+        TAKE_PAGE * (activePage - 1)
+      }&take=${TAKE_PAGE}&category=${selectedCategory}&orderBy=${selectedFilter}&contains=${debouncedKeyword}`
+    ],
+    () =>
+      fetch(
+        `/api/get-products?skip=${
+          TAKE_PAGE * (activePage - 1)
+        }&take=${TAKE_PAGE}&category=${selectedCategory}&orderBy=${selectedFilter}&contains=${debouncedKeyword}`
+      ).then((res) => res.json()),
+    {
+      select: (data) => data.items
+    }
+  );
 
-  useEffect(() => {
-    // activePage
-    const skip = TAKE_PAGE * (activePage - 1);
+  const { data: categories } = useQuery<
+    { items: categories[] },
+    unknown,
+    categories[]
+  >(
+    [`/api/get-categories`],
+    () => fetch(`/api/get-categories`).then((res) => res.json()),
+    { select: (data) => data.items }
+  );
 
-    fetch(`/api/get-products?skip=${skip}&take=${TAKE_PAGE}`)
-      .then((res) => res.json())
-      .then((data) => setProducts(data.items));
-  }, [activePage]);
+  const { data: total } = useQuery(
+    [
+      `/api/get-products-count?category=${selectedCategory}&contains=${debouncedKeyword}`
+    ],
+    () =>
+      fetch(
+        `/api/get-products-count?category=${selectedCategory}&contains=${debouncedKeyword}`
+      )
+        .then((res) => res.json())
+        .then((data) => Math.ceil(data.items / TAKE_PAGE))
+  );
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setKeyword(e.target.value);
+  };
 
   return (
     <div className="px-36 mt-36 mb-36">
+      {/* 검색 */}
+      <div className="mb-4">
+        <Input
+          icon={<IconSearch />}
+          value={keyword}
+          onChange={handleInputChange}
+          placeholder="검색어를 입력해주세요."
+        />
+      </div>
+
+      {/* 필터 */}
+      <div className="mb-4">
+        <Select
+          value={selectedFilter}
+          onChange={setSelectedFilter}
+          data={FILTERS}
+        />
+      </div>
+
+      {/* 카테고리 */}
+      {categories && (
+        <div className="mb-4">
+          <SegmentedControl
+            value={selectedCategory}
+            onChange={setSelectedCategory}
+            data={[
+              { label: 'ALL', value: '-1' },
+              ...categories.map((category) => ({
+                label: category.name,
+                value: String(category.id)
+              }))
+            ]}
+            color="dark"
+          />
+        </div>
+      )}
+
+      {/* 상품 */}
       {products && (
         <div className="grid grid-cols-3 gap-5">
           {products.map((item) => (
-            <div key={item.id}>
+            <div
+              key={item.id}
+              css={css`
+                max-width: 310;
+              `}
+            >
               <Image
                 className="rounded"
                 src={item.image_url as string}
@@ -55,19 +130,23 @@ const Products = () => {
                 </span>
               </div>
               <span className="text-zinc-400">
-                {item.category_id === 1 && '의류'}
+                {CATEGORY_NAME[item.category_id - 1]}
               </span>
             </div>
           ))}
         </div>
       )}
+
+      {/* 페이지네이션 */}
       <div className="w-full flex mt-5">
-        <Pagination
-          className="m-auto"
-          page={activePage}
-          onChange={setPage}
-          total={total}
-        />
+        {total && (
+          <Pagination
+            className="m-auto"
+            page={activePage}
+            onChange={setPage}
+            total={total}
+          />
+        )}
       </div>
     </div>
   );

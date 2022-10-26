@@ -11,8 +11,6 @@ async function updateProduct(id: number, contents: string) {
       data: { contents: contents }
     });
 
-    console.log('== res == : ', res);
-
     return res;
   } catch (error) {
     console.error(error);
