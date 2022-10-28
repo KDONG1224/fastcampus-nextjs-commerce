@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Carousel from 'nuka-carousel';
 
-import { CustomEditor } from 'components';
+import { Count, CustomEditor } from 'components';
 import { useRouter } from 'next/router';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 
@@ -17,7 +17,7 @@ import {
   useQueryClient
 } from '@tanstack/react-query';
 import { Button } from '@mantine/core';
-import { IconHeart, IconHeartbeat } from '@tabler/icons';
+import { IconHeart, IconHeartbeat, IconShoppingCart } from '@tabler/icons';
 import { useSession } from 'next-auth/react';
 
 interface ProductsV2DetailProps {
@@ -30,6 +30,7 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
   const { data: session } = useSession();
 
   const [index, setIndex] = useState(0);
+  const [quantity, setQuantity] = useState<number | undefined>(1);
   const [editorState] = useState<EditorState | undefined>(() =>
     product.contents
       ? EditorState.createWithContent(
@@ -82,13 +83,22 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
     }
   );
 
+  const validate = (type: 'cart' | 'order') => {
+    if (quantity == null) {
+      alert('최소 수량을 선택하세요.');
+      return;
+    }
+
+    router.push('/cart');
+  };
+
   const isWished =
     wishlist && productId ? wishlist.indexOf(String(productId)) > -1 : false;
 
   return (
     <>
       {product !== null && productId !== null ? (
-        <div className="p-24 flex flex-row">
+        <div className="flex flex-row">
           <div style={{ maxWidth: 600, marginRight: 52 }}>
             <Carousel
               animation="fade"
@@ -126,44 +136,83 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
               maxWidth: 600
             }}
           >
+            {/* 카테고리 */}
             <div className="text-lg text-zinc-400">
               {CATEGORY_NAME[product.category_id - 1]}
             </div>
+
+            {/* 상품이름 */}
             <div className="text-4xl font-semibold">{product.name}</div>
+
+            {/* 가격 */}
             <div className="text-lg">
               {product.price.toLocaleString('ko-kr')}원
             </div>
-            <Button
-              // loading={isLoading}
-              disabled={wishlist == null}
-              leftIcon={
-                isWished ? (
-                  <IconHeart size={20} stroke={1.5} />
-                ) : (
-                  <IconHeartbeat size={20} stroke={1.5} />
-                )
-              }
-              style={{ backgroundColor: isWished ? 'red' : 'grey' }}
-              radius="xl"
-              size="md"
-              styles={{
-                root: {
-                  paddingRight: 14,
-                  height: 48
-                }
-              }}
-              onClick={() => {
-                if (session == null) {
-                  alert('로그인이 필요해요');
-                  router.push('/auth/login');
-                  return;
-                }
 
-                mutate(String(productId));
-              }}
-            >
-              찜하기
-            </Button>
+            {/* 수량 */}
+            <div className="">
+              <span className="text-lg">수량</span>
+              <Count value={quantity} setValue={setQuantity} max={200} />
+            </div>
+
+            {/* 장바구니, 찜하기 버튼 */}
+            <div className="flex space-x-3">
+              <Button
+                leftIcon={<IconShoppingCart size={20} stroke={1.5} />}
+                style={{ backgroundColor: 'black' }}
+                radius="xl"
+                size="md"
+                styles={{
+                  root: {
+                    paddingRight: 14,
+                    height: 48
+                  }
+                }}
+                onClick={() => {
+                  if (session == null) {
+                    alert('로그인이 필요해요');
+                    router.push('/auth/login');
+                    return;
+                  }
+                  validate('cart');
+                }}
+              >
+                장바구니
+              </Button>
+              <Button
+                // loading={isLoading}
+                disabled={wishlist == null}
+                leftIcon={
+                  isWished ? (
+                    <IconHeart size={20} stroke={1.5} />
+                  ) : (
+                    <IconHeartbeat size={20} stroke={1.5} />
+                  )
+                }
+                style={{ backgroundColor: isWished ? 'red' : 'grey' }}
+                radius="xl"
+                size="md"
+                styles={{
+                  root: {
+                    paddingRight: 14,
+                    height: 48
+                  }
+                }}
+                onClick={() => {
+                  if (session == null) {
+                    alert('로그인이 필요해요');
+                    router.push('/auth/login');
+                    return;
+                  }
+
+                  mutate(String(productId));
+                }}
+              >
+                찜하기
+              </Button>
+            </div>
+
+            {/* 등록일자 */}
             <div className="text-sm text-zinc-300">
               등록일자 : {format(new Date(product.createdAt), 'yyyy년 M월 d일')}
             </div>

@@ -6,8 +6,7 @@ const Login = () => {
     <div
       style={{
         display: 'flex',
-        width: '100vw',
-        height: '100vh',
+        height: '70vh',
         alignItems: 'center',
         justifyContent: 'center'
       }}

@@ -3,7 +3,7 @@ import type { AppContext, AppInitialProps, AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SessionProvider } from 'next-auth/react';
 import { Session } from 'next-auth';
-import { NextComponentType } from 'next';
+import { Header } from 'components';
 
 export const CLIENT_ID =
   '403286583639-3rrgsnpt2r2jcfdhlknlqg09sabst7tk.apps.googleusercontent.com';
@@ -25,7 +25,10 @@ const App = ({
   return (
     <SessionProvider session={session}>
       <QueryClientProvider client={queryClient}>
-        <Component {...pageProps} />
+        <div className="px-36">
+          <Header />
+          <Component {...pageProps} />
+        </div>
       </QueryClientProvider>
     </SessionProvider>
   );
