@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Carousel from 'nuka-carousel';
 
 import { css } from '@emotion/react';
-import { sampleImages } from './products/[id]';
+import { sampleImages } from './productsV1';
 
 const ProductsV2 = () => {
   const [index, setIndex] = useState(0);

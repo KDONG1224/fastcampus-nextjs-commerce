@@ -1,77 +1,193 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Carousel from 'nuka-carousel';
 
-import { css } from '@emotion/react';
-import { sampleImages } from 'pages/products';
 import { CustomEditor } from 'components';
 import { useRouter } from 'next/router';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 
-const ProductsV2Detail = () => {
+import { GetServerSideProps } from 'next';
+import { products } from '@prisma/client';
+import { format } from 'date-fns';
+import { CATEGORY_NAME } from 'const';
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient
+} from '@tanstack/react-query';
+import { Button } from '@mantine/core';
+import { IconHeart, IconHeartbeat } from '@tabler/icons';
+import { useSession } from 'next-auth/react';
+
+interface ProductsV2DetailProps {
+  product: products & { images: string[] };
+}
+
+const WISHLIST_QUETY_KEY = '/api/get-wishlist';
+
+const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
+  const { data: session } = useSession();
+
   const [index, setIndex] = useState(0);
-  const [editorState, setEditorState] = useState<EditorState | undefined>(
-    undefined
+  const [editorState] = useState<EditorState | undefined>(() =>
+    product.contents
+      ? EditorState.createWithContent(
+          convertFromRaw(JSON.parse(product.contents))
+        )
+      : EditorState.createEmpty()
   );
 
   const router = useRouter();
   const { id: productId } = router.query;
 
-  useEffect(() => {
-    if (productId != null) {
-      fetch(`/api/get-product?id=${productId}`)
+  const queryClient = useQueryClient();
+
+  const { data: wishlist } = useQuery([WISHLIST_QUETY_KEY], () =>
+    fetch(WISHLIST_QUETY_KEY)
+      .then((res) => res.json())
+      .then((data) => data.items)
+  );
+
+  const { mutate, isLoading } = useMutation<unknown, unknown, string, any>(
+    (pid) =>
+      fetch('/api/update-wishlist', {
+        method: 'POST',
+        body: JSON.stringify({ pid })
+      })
         .then((res) => res.json())
-        .then((data) => {
-          if (data.items.contents) {
-            setEditorState(
-              EditorState.createWithContent(
-                convertFromRaw(JSON.parse(data.items.contents))
-              )
-            );
-          } else {
-            setEditorState(EditorState.createEmpty());
-          }
-        });
+        .then((data) => data.items),
+    {
+      onMutate: async (pid) => {
+        await queryClient.cancelQueries([WISHLIST_QUETY_KEY]);
+
+        const prev = queryClient.getQueryData([WISHLIST_QUETY_KEY]);
+
+        queryClient.setQueryData<string[]>([WISHLIST_QUETY_KEY], (prod) =>
+          prod
+            ? prod.includes(String(pid))
+              ? prod.filter((id) => id !== String(pid))
+              : prod.concat(String(pid))
+            : []
+        );
+
+        return prev;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries([WISHLIST_QUETY_KEY]);
+      },
+      onError: (error, _, context) => {
+        queryClient.setQueryData([WISHLIST_QUETY_KEY], context.prev);
+      }
     }
-  }, [productId]);
+  );
+
+  const isWished =
+    wishlist && productId ? wishlist.indexOf(String(productId)) > -1 : false;
 
   return (
     <>
-      <Carousel
-        animation="fade"
-        autoplay
-        withoutControls
-        wrapAround
-        speed={10}
-        slideIndex={index}
-      >
-        {sampleImages.map((image) => (
-          <Image
-            key={image.original}
-            src={image.original}
-            alt={image.thumbnail}
-            width={1000}
-            height={600}
-            layout="responsive"
-          />
-        ))}
-      </Carousel>
-      <div
-        css={css`
-          display: flex;
-        `}
-      >
-        {sampleImages.map((item, idx) => (
-          <div key={idx} onClick={() => setIndex(idx)}>
-            <Image src={item.original} alt="image" width={100} height={60} />
+      {product !== null && productId !== null ? (
+        <div className="p-24 flex flex-row">
+          <div style={{ maxWidth: 600, marginRight: 52 }}>
+            <Carousel
+              animation="fade"
+              // autoplay
+              withoutControls
+              wrapAround
+              speed={10}
+              slideIndex={index}
+            >
+              {product.images.map((url, i) => (
+                <Image
+                  key={`${url}-carousel-${i}`}
+                  src={url}
+                  alt={url}
+                  width={600}
+                  height={600}
+                  layout="responsive"
+                />
+              ))}
+            </Carousel>
+            <div className="flex space-x-4 mt-2">
+              {product.images.map((url, idx) => (
+                <div key={`${url}-thumb-${idx}`} onClick={() => setIndex(idx)}>
+                  <Image src={url} alt="image" width={100} height={100} />
+                </div>
+              ))}
+            </div>
+            {editorState != null && (
+              <CustomEditor editorState={editorState} readOnly />
+            )}
           </div>
-        ))}
-      </div>
-      {editorState != null && (
-        <CustomEditor editorState={editorState} readOnly />
+          <div
+            className="flex flex-col space-y-6"
+            style={{
+              maxWidth: 600
+            }}
+          >
+            <div className="text-lg text-zinc-400">
+              {CATEGORY_NAME[product.category_id - 1]}
+            </div>
+            <div className="text-4xl font-semibold">{product.name}</div>
+            <div className="text-lg">
+              {product.price.toLocaleString('ko-kr')}원
+            </div>
+            <Button
+              // loading={isLoading}
+              disabled={wishlist == null}
+              leftIcon={
+                isWished ? (
+                  <IconHeart size={20} stroke={1.5} />
+                ) : (
+                  <IconHeartbeat size={20} stroke={1.5} />
+                )
+              }
+              style={{ backgroundColor: isWished ? 'red' : 'grey' }}
+              radius="xl"
+              size="md"
+              styles={{
+                root: {
+                  paddingRight: 14,
+                  height: 48
+                }
+              }}
+              onClick={() => {
+                if (session == null) {
+                  alert('로그인이 필요해요');
+                  router.push('/auth/login');
+                  return;
+                }
+
+                mutate(String(productId));
+              }}
+            >
+              찜하기
+            </Button>
+            <div className="text-sm text-zinc-300">
+              등록일자 : {format(new Date(product.createdAt), 'yyyy년 M월 d일')}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div>로딩중...</div>
       )}
     </>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const product = await fetch(
+    `http://localhost:3000/api/get-product?id=${context.params?.id}`
+  )
+    .then((res) => res.json())
+    .then((data) => data.items);
+
+  return {
+    props: {
+      product: { ...product, images: [product.image_url, product.image_url] }
+    }
+  };
 };
 
 export default ProductsV2Detail;

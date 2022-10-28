@@ -41,7 +41,7 @@ const ProductsV2Edit = () => {
       fetch(`/api/get-product?id=${productId}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data.items.contents) {
+          if (data.items && data.items.contents) {
             setEditorState(
               EditorState.createWithContent(
                 convertFromRaw(JSON.parse(data.items.contents))

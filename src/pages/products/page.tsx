@@ -7,8 +7,13 @@ import { css } from '@emotion/react';
 import { IconSearch } from '@tabler/icons';
 import { useDebounce } from 'hooks';
 import { useQuery } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 const Products = () => {
+  const { data: session } = useSession();
+  const router = useRouter();
+
   const [activePage, setPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string>('-1');
   const [selectedFilter, setSelectedFilter] = useState<string | null>(
@@ -67,6 +72,7 @@ const Products = () => {
 
   return (
     <div className="px-36 mt-36 mb-36">
+      {session && <div>안녕하세요! {session?.user?.name}님</div>}
       {/* 검색 */}
       <div className="mb-4">
         <Input
@@ -76,7 +82,6 @@ const Products = () => {
           placeholder="검색어를 입력해주세요."
         />
       </div>
-
       {/* 필터 */}
       <div className="mb-4">
         <Select
@@ -85,7 +90,6 @@ const Products = () => {
           data={FILTERS}
         />
       </div>
-
       {/* 카테고리 */}
       {categories && (
         <div className="mb-4">
@@ -103,7 +107,6 @@ const Products = () => {
           />
         </div>
       )}
-
       {/* 상품 */}
       {products && (
         <div className="grid grid-cols-3 gap-5">
@@ -113,6 +116,7 @@ const Products = () => {
               css={css`
                 max-width: 310;
               `}
+              onClick={() => router.push(`/products/${item.id}`)}
             >
               <Image
                 className="rounded"
@@ -136,7 +140,6 @@ const Products = () => {
           ))}
         </div>
       )}
-
       {/* 페이지네이션 */}
       <div className="w-full flex mt-5">
         {total && (
