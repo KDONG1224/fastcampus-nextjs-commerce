@@ -1,15 +1,10 @@
+import React from 'react';
 import { Badge, Button } from '@mantine/core';
-import { Cart } from '@prisma/client';
-import { IconRefresh, IconX } from '@tabler/icons';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { CartItem, Count, OrderItmes } from 'components';
-import { CART_QUERY_KEY, ORDER_STATUS } from 'const';
+import { IconX } from '@tabler/icons';
+import { OrderItmes } from 'components';
+import { ORDER_STATUS } from 'const';
 import { format } from 'date-fns';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
-import { CartItemProps } from 'pages/cart';
 import { OrderDetailProps } from 'pages/my';
-import React, { useEffect, useMemo, useState } from 'react';
 
 interface ItemProps {
   details: OrderDetailProps;

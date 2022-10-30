@@ -6,7 +6,7 @@ import { CART_QUERY_KEY } from 'const';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { CartItemProps } from 'pages/cart';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ItemProps {
   cart: CartItemProps;

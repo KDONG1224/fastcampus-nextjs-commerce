@@ -1,13 +1,8 @@
-import { Cart } from '@prisma/client';
-import { IconRefresh, IconX } from '@tabler/icons';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Count } from 'components';
-import { CART_QUERY_KEY } from 'const';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { CartItemProps } from 'pages/cart';
 import { OrderItemDetailProps } from 'pages/my';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ItemProps {
   items: OrderItemDetailProps;

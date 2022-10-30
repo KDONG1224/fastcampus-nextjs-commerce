@@ -1,17 +1,11 @@
+import React, { useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Button } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CartItem } from 'components';
 import Image from 'next/image';
 import { Cart, OrderItem, products } from '@prisma/client';
-import React, { useEffect, useMemo } from 'react';
-import { css } from '@emotion/react';
-import {
-  blurDataURL,
-  CATEGORY_NAME,
-  ORDERITEM_QUERY_KEY,
-  ORDER_QUERY_KEY
-} from 'const';
+import { blurDataURL, CATEGORY_NAME, ORDERITEM_QUERY_KEY } from 'const';
 import { useRouter } from 'next/router';
 
 const Row = styled.div`
@@ -76,7 +70,7 @@ const CartPage = () => {
         queryClient.invalidateQueries([ORDERITEM_QUERY_KEY]);
       },
       onSuccess: () => {
-        // router.push('/my');
+        router.push('/my');
       }
     }
   );
@@ -169,9 +163,7 @@ const CartPage = () => {
             {products.map((item) => (
               <div
                 key={item.id}
-                css={css`
-                  max-width: 310;
-                `}
+                style={{ maxWidth: 310 }}
                 onClick={() => router.push(`/products/${item.id}`)}
               >
                 <Image
