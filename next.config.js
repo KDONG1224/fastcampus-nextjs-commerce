@@ -10,7 +10,8 @@ const nextConfig = {
       'picsum.photos',
       'cdn.shopify.com',
       'source.unsplash.com',
-      'lh3.googleusercontent.com'
+      'lh3.googleusercontent.com',
+      'i.ibb.co'
     ]
   }
 };

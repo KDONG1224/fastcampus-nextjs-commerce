@@ -11,13 +11,17 @@ const Editor = dynamic<EditorProps>(
   { ssr: false }
 );
 
-const StyledWrapper = styled.div`
+const StyledWrapper = styled.div<{ readOnly: boolean; noPadding: boolean }>`
   padding: 16px;
+  ${(props) =>
+    props.readOnly ? '' : 'border: 1px solid black; border-radius: 8px;'}
+  ${(props) => (props.noPadding ? '' : 'padding: 16px;')}
 `;
 
 interface CustomEditorProps {
   editorState: EditorState;
   readOnly?: boolean;
+  noPadding?: boolean;
   onSave?: () => void;
   onEditorStateChange?: Dispatch<SetStateAction<EditorState | undefined>>;
 }
@@ -25,11 +29,12 @@ interface CustomEditorProps {
 export const CustomEditor: React.FC<CustomEditorProps> = ({
   editorState,
   readOnly = false,
+  noPadding = false,
   onSave,
   onEditorStateChange
 }) => {
   return (
-    <StyledWrapper>
+    <StyledWrapper readOnly={readOnly} noPadding={noPadding}>
       <Editor
         readOnly={readOnly}
         editorState={editorState}

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Carousel from 'nuka-carousel';
 
-import { CART_QUERY_KEY, Count, CustomEditor } from 'components';
+import { CART_QUERY_KEY, CommnetItem, Count, CustomEditor } from 'components';
 import { useRouter } from 'next/router';
 import { convertFromRaw, EditorState } from 'draft-js';
 
 import { GetServerSideProps } from 'next';
-import { Cart, OrderItem, products } from '@prisma/client';
+import { Cart, Comment, OrderItem, products } from '@prisma/client';
 import { format } from 'date-fns';
 import { CATEGORY_NAME, ORDERITEM_QUERY_KEY, WISHLIST_QUETY_KEY } from 'const';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -15,11 +15,16 @@ import { Button } from '@mantine/core';
 import { IconHeart, IconHeartbeat, IconShoppingCart } from '@tabler/icons';
 import { useSession } from 'next-auth/react';
 
+export interface CommentItemType extends Comment, OrderItem {}
 interface ProductsV2DetailProps {
   product: products & { images: string[] };
+  comments: CommentItemType[];
 }
 
-const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
+const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({
+  product,
+  comments
+}) => {
   const { data: session } = useSession();
 
   const [index, setIndex] = useState(0);
@@ -102,7 +107,7 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
   const { mutate: addOrder } = useMutation<
     unknown,
     unknown,
-    Omit<OrderItem, 'id'>,
+    Omit<OrderItem, 'id'>[],
     any
   >(
     (items) =>
@@ -185,6 +190,14 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
             {editorState != null && (
               <CustomEditor editorState={editorState} readOnly />
             )}
+
+            <div>
+              <p className="text-2xl font-semibold">후기</p>
+              {comments &&
+                comments.map((comment, idx) => (
+                  <CommnetItem key={idx} comment={comment} />
+                ))}
+            </div>
           </div>
           <div
             className="flex flex-col space-y-6"
@@ -311,9 +324,16 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     .then((res) => res.json())
     .then((data) => data.items);
 
+  const comments = await fetch(
+    `http://localhost:3000/api/get-comments?productId=${context.params?.id}`
+  )
+    .then((res) => res.json())
+    .then((data) => data.items);
+
   return {
     props: {
-      product: { ...product, images: [product.image_url, product.image_url] }
+      product: { ...product, images: [product.image_url, product.image_url] },
+      comments: comments
     }
   };
 };

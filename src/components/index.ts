@@ -4,3 +4,4 @@ export * from './SnsLogin';
 export * from './Header';
 export * from './Count';
 export * from './Item';
+export * from './Image';

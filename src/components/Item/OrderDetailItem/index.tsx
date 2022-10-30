@@ -8,10 +8,16 @@ import { OrderDetailProps } from 'pages/my';
 
 interface ItemProps {
   details: OrderDetailProps;
+  onPayment: (id: number) => void;
+  onCancel: (id: number) => void;
 }
 
-export const OrderDetailItem: React.FC<ItemProps> = ({ details }) => {
-  const { status, orderItems, recevier, address, phoneNumber, createdAt } =
+export const OrderDetailItem: React.FC<ItemProps> = ({
+  details,
+  onPayment,
+  onCancel
+}) => {
+  const { status, id, orderItems, recevier, address, phoneNumber, createdAt } =
     details;
 
   return (
@@ -23,10 +29,10 @@ export const OrderDetailItem: React.FC<ItemProps> = ({ details }) => {
         <Badge color={status === 0 ? 'red' : ''} className="mb-2">
           {ORDER_STATUS[status + 1]}
         </Badge>
-        <IconX className="ml-auto" />
+        <IconX className="ml-auto" onClick={() => onCancel(id)} />
       </div>
       {orderItems.map((orderItem, idx) => (
-        <OrderItmes key={idx} items={orderItem} />
+        <OrderItmes key={idx} items={orderItem} status={status} />
       ))}
 
       <div className="flex mt-4">
@@ -51,9 +57,14 @@ export const OrderDetailItem: React.FC<ItemProps> = ({ details }) => {
           <span className="text-zinc-400 mt-auto mb-auto">
             주문일자 : {format(new Date(createdAt), 'yyyy년 M월 d일 HH:mm:ss')}
           </span>
-          <Button style={{ backgroundColor: 'black', color: 'white' }}>
-            결제 처리
-          </Button>
+          {status !== 5 && (
+            <Button
+              style={{ backgroundColor: 'black', color: 'white' }}
+              onClick={() => onPayment(id)}
+            >
+              결제 처리
+            </Button>
+          )}
         </div>
       </div>
     </div>
