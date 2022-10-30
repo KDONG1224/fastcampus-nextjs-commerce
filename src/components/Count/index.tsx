@@ -54,13 +54,15 @@ interface CountProps {
   setValue: Dispatch<SetStateAction<number | undefined>>;
   min?: number;
   max?: number;
+  disabled?: boolean;
 }
 
 export const Count: React.FC<CountProps> = ({
   value,
   setValue,
   min = 1,
-  max = 10
+  max = 10,
+  disabled = false
 }) => {
   const { classes } = useStyles();
   const handlers = useRef<NumberInputHandlers>(null);
@@ -71,7 +73,7 @@ export const Count: React.FC<CountProps> = ({
         size={28}
         variant="transparent"
         onClick={() => handlers.current?.decrement()}
-        disabled={value === min}
+        disabled={value === min || disabled}
         className={classes.control}
         onMouseDown={(event) => event.preventDefault()}
       >
@@ -93,7 +95,7 @@ export const Count: React.FC<CountProps> = ({
         size={28}
         variant="transparent"
         onClick={() => handlers.current?.increment()}
-        disabled={value === max}
+        disabled={value === max || disabled}
         className={classes.control}
         onMouseDown={(event) => event.preventDefault()}
       >

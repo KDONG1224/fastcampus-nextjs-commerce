@@ -45,7 +45,7 @@ export const OrderItmes: React.FC<ItemProps> = ({ items }) => {
           가격 : {price.toLocaleString('ko-kr')}원
         </span>
         <div className="flex items-center space-x-4">
-          <Count value={quantity} setValue={setQuantity} />
+          <Count value={quantity} setValue={setQuantity} disabled />
         </div>
       </div>
       <div className="flex ml-auto space-x-4">
