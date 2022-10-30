@@ -2,20 +2,15 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Carousel from 'nuka-carousel';
 
-import { Count, CustomEditor } from 'components';
+import { CART_QUERY_KEY, Count, CustomEditor } from 'components';
 import { useRouter } from 'next/router';
-import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
+import { convertFromRaw, EditorState } from 'draft-js';
 
 import { GetServerSideProps } from 'next';
-import { products } from '@prisma/client';
+import { Cart, OrderItem, products } from '@prisma/client';
 import { format } from 'date-fns';
-import { CATEGORY_NAME } from 'const';
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient
-} from '@tanstack/react-query';
+import { CATEGORY_NAME, ORDERITEM_QUERY_KEY, WISHLIST_QUETY_KEY } from 'const';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@mantine/core';
 import { IconHeart, IconHeartbeat, IconShoppingCart } from '@tabler/icons';
 import { useSession } from 'next-auth/react';
@@ -23,8 +18,6 @@ import { useSession } from 'next-auth/react';
 interface ProductsV2DetailProps {
   product: products & { images: string[] };
 }
-
-const WISHLIST_QUETY_KEY = '/api/get-wishlist';
 
 const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
   const { data: session } = useSession();
@@ -83,13 +76,76 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
     }
   );
 
+  const { mutate: addCartItem } = useMutation<
+    unknown,
+    unknown,
+    Omit<Cart, 'id' | 'userId'>,
+    any
+  >(
+    (cartItem) =>
+      fetch('/api/add-cart', {
+        method: 'POST',
+        body: JSON.stringify({ cartItem })
+      })
+        .then((res) => res.json())
+        .then((data) => data.items),
+    {
+      onMutate: () => {
+        queryClient.invalidateQueries([ORDERITEM_QUERY_KEY]);
+      },
+      onSuccess: () => {
+        router.push('/cart');
+      }
+    }
+  );
+
+  const { mutate: addOrder } = useMutation<
+    unknown,
+    unknown,
+    Omit<OrderItem, 'id'>,
+    any
+  >(
+    (items) =>
+      fetch('/api/add-order', {
+        method: 'POST',
+        body: JSON.stringify({ items })
+      })
+        .then((res) => res.json())
+        .then((data) => data.items),
+    {
+      onMutate: () => {
+        queryClient.invalidateQueries([CART_QUERY_KEY]);
+      },
+      onSuccess: () => {
+        router.push('/my');
+      }
+    }
+  );
+
   const validate = (type: 'cart' | 'order') => {
     if (quantity == null) {
       alert('최소 수량을 선택하세요.');
       return;
     }
 
-    router.push('/cart');
+    if (type === 'cart') {
+      addCartItem({
+        productId: product.id,
+        quantity: quantity,
+        amount: product.price * quantity
+      });
+    }
+
+    if (type === 'order') {
+      addOrder([
+        {
+          productId: product.id,
+          quantity: quantity,
+          price: product.price,
+          amount: product.price * quantity
+        }
+      ]);
+    }
   };
 
   const isWished =
@@ -211,6 +267,29 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({ product }) => {
                 찜하기
               </Button>
             </div>
+
+            {/* 구매하기 */}
+            <Button
+              style={{ backgroundColor: 'black' }}
+              radius="xl"
+              size="md"
+              styles={{
+                root: {
+                  paddingRight: 14,
+                  height: 48
+                }
+              }}
+              onClick={() => {
+                if (session == null) {
+                  alert('로그인이 필요해요');
+                  router.push('/auth/login');
+                  return;
+                }
+                validate('order');
+              }}
+            >
+              구매하기
+            </Button>
 
             {/* 등록일자 */}
             <div className="text-sm text-zinc-300">

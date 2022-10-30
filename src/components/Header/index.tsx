@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconHome, IconShoppingCart, IconUser } from '@tabler/icons';
+import { IconHeart, IconHome, IconShoppingCart, IconUser } from '@tabler/icons';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
@@ -12,6 +12,9 @@ export const Header = () => {
     switch (route) {
       case 'home':
         router.push('/');
+        break;
+      case 'wish':
+        router.push('/wishlist');
         break;
       case 'cart':
         router.push('/cart');
@@ -33,6 +36,7 @@ export const Header = () => {
       <div className="w-full flex h-50 items-center">
         <IconHome onClick={() => handleMove('home')} />
         <span className="m-auto" />
+        <IconHeart className="mr-4" onClick={() => handleMove('wish')} />
         <IconShoppingCart className="mr-4" onClick={() => handleMove('cart')} />
         {session ? (
           <Image
