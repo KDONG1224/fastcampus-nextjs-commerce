@@ -9,9 +9,9 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
-      clientId: process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID as string,
-      clientSecret: process.env
-        .NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_PASSWORD as string
+      clientId:
+        '403286583639-3rrgsnpt2r2jcfdhlknlqg09sabst7tk.apps.googleusercontent.com',
+      clientSecret: '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'
     })
   ],
   session: {
