@@ -5,10 +5,9 @@ import { SessionProvider } from 'next-auth/react';
 import { Session } from 'next-auth';
 import { Header } from 'components';
 
-export const CLIENT_ID =
-  '403286583639-3rrgsnpt2r2jcfdhlknlqg09sabst7tk.apps.googleusercontent.com';
-
-export const CLIENT_PASSWORAD = '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';
+export const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID;
+export const CLIENT_PASSWORAD =
+  process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_PASSWORD;
 
 const App = ({
   Component,
