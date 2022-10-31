@@ -1,5 +1,5 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: 'http://localhost:9879/',
+  siteUrl: 'https://kdong-commerce.vercel.app/',
   generateRobotsTxt: true
 };

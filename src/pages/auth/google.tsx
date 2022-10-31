@@ -14,7 +14,7 @@ const GoogleAuthLogin = () => {
   };
 
   return (
-    <GoogleOAuthProvider clientId={CLIENT_ID}>
+    <GoogleOAuthProvider clientId={CLIENT_ID as string}>
       <div style={{ display: 'flex' }}>
         <GoogleLogin
           onSuccess={(credentialResponse) => {
