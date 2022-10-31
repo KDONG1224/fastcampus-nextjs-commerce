@@ -3,6 +3,7 @@ import { OrderDetailItem } from 'components';
 import { OrderItem, Orders } from '@prisma/client';
 import React, { useState } from 'react';
 import { CART_QUERY_KEY, ORDER_QUERY_KEY } from 'const';
+import { useRouter } from 'next/router';
 
 export interface OrderItemDetailProps extends OrderItem {
   name: string;
@@ -15,6 +16,7 @@ export interface OrderDetailProps extends Orders {
 
 const MyPage = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const [selectId, setSelectId] = useState('');
 
