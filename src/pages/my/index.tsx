@@ -46,7 +46,7 @@ const MyPage = () => {
         queryClient.invalidateQueries([CART_QUERY_KEY]);
       },
       onSuccess: () => {
-        // router.reload();
+        router.reload();
       },
       onError: (error) => {
         console.log(error);

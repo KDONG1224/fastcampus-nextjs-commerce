@@ -7,8 +7,8 @@ import { Header } from 'components';
 import Head from 'next/head';
 
 export const CLIENT_ID =
-  '403286583639-3rrgsnpt2r2jcfdhlknlqg09sabst7tk.apps.googleusercontent.com';
-export const CLIENT_PASSWORAD = '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';
+  '403286583639-j377nck3dof5f4mm15t48pjbvoq09fie.apps.googleusercontent.com';
+export const CLIENT_PASSWORAD = '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';
 
 const App = ({
   Component,
