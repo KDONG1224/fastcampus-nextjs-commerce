@@ -2,14 +2,19 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Carousel from 'nuka-carousel';
 
-import { CART_QUERY_KEY, CommnetItem, Count, CustomEditor } from 'components';
+import { CommnetItem, Count, CustomEditor } from 'components';
 import { useRouter } from 'next/router';
 import { convertFromRaw, EditorState } from 'draft-js';
 
 import { GetServerSideProps } from 'next';
 import { Cart, Comment, OrderItem, products } from '@prisma/client';
 import { format } from 'date-fns';
-import { CATEGORY_NAME, ORDERITEM_QUERY_KEY, WISHLIST_QUETY_KEY } from 'const';
+import {
+  CART_QUERY_KEY,
+  CATEGORY_NAME,
+  ORDERITEM_QUERY_KEY,
+  WISHLIST_QUETY_KEY
+} from 'const';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@mantine/core';
 import { IconHeart, IconHeartbeat, IconShoppingCart } from '@tabler/icons';
@@ -192,11 +197,14 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({
             )}
 
             <div>
-              <p className="text-2xl font-semibold">후기</p>
-              {comments &&
+              <p className="text-2xl font-semibold mb-2">후기</p>
+              {comments.length > 0 ? (
                 comments.map((comment, idx) => (
                   <CommnetItem key={idx} comment={comment} />
-                ))}
+                ))
+              ) : (
+                <div className="text-sm text-zinc-400">후기가 없습니다.</div>
+              )}
             </div>
           </div>
           <div
@@ -329,6 +337,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   )
     .then((res) => res.json())
     .then((data) => data.items);
+
+  console.log('== comments == : ', comments);
 
   return {
     props: {

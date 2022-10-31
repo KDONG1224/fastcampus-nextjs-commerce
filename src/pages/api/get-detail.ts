@@ -34,7 +34,7 @@ export default async function handler(
 
     const _res = await getDetail(pageId as string);
 
-    res.status(200).json({ detail: _res?.properties, message: 'Success' });
+    res.status(200).json({ detail: _res?.object, message: 'Success' });
   } catch (error) {
     res.status(200).json({ message: 'Failed' });
   }

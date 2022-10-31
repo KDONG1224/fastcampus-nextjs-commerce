@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="https://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="https://www.w3.org/1999/xhtml" xmlns:mobile="https://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="https://www.google.com/schemas/sitemap-image/1.1" xmlns:video="https://www.google.com/schemas/sitemap-video/1.1">
+<url><loc>http://localhost:9879</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/auth/google</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/auth/login</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/cart</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/comment/edit</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/my</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/products</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/products/page</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/productsV1</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/productsV2</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/upload</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>http://localhost:9879/wishlist</loc><lastmod>2022-10-31T02:50:55.230Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+</urlset>

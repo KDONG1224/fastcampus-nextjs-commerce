@@ -15,14 +15,13 @@ async function getComments(productId: number) {
     });
 
     for (const orderItem of orderItems) {
-      let orderItems: OrderItem[] = [];
       const _res = await prisma.comment.findUnique({
         where: {
           orderItemId: orderItem.id
         }
       });
 
-      if (res) {
+      if (_res) {
         res.push({ ...orderItem, ..._res });
       }
     }

@@ -45,7 +45,6 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -55,7 +54,6 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
@@ -64,8 +62,6 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
 }
 
 model VerificationToken {
@@ -83,35 +79,38 @@ model Wishlist {
 }
 
 model Cart {
-  id Int @id @default(autoincrement())
-  userId String
+  id        Int    @id @default(autoincrement())
+  userId    String
   productId Int
-  quantity Int
-  amount Int
+  quantity  Int
+  amount    Int
 }
+
 model OrderItem {
-  id Int @id @default(autoincrement())
+  id        Int @id @default(autoincrement())
   productId Int
-  price Int
-  quantity Int
-  amount Int
+  price     Int
+  quantity  Int
+  amount    Int
 }
+
 model Orders {
-  id Int @id @default(autoincrement())
-  userId String
+  id           Int      @id @default(autoincrement())
+  userId       String
   orderItemIds String
-  recevier String?
-  address String?
-  phoneNumber String?
-  createdAt DateTime @default(now())
-  status Int
+  recevier     String?
+  address      String?
+  phoneNumber  String?
+  createdAt    DateTime @default(now())
+  status       Int
 }
+
 model Comment {
-  id Int @id @default(autoincrement())
-  userId String
-  orderItemId Int @unique
-  rate Int
-  contents String?
-  images String?
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  userId      String
+  orderItemId Int      @unique
+  rate        Int
+  contents    String?
+  images      String?
+  updatedAt   DateTime @updatedAt
 }
