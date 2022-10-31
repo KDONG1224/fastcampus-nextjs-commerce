@@ -13,7 +13,7 @@ interface ItemProps {
 }
 
 export const CartItem: React.FC<ItemProps> = ({ cart }) => {
-  const { name, productId, price, quantity: quan, amount, image_url } = cart;
+  const { name, productId, price, quantity: quan, image_url } = cart;
 
   const [quantity, setQuantity] = useState<number | undefined>(quan);
   const [total, setTotal] = useState<number>(quantity as number);
@@ -44,7 +44,7 @@ export const CartItem: React.FC<ItemProps> = ({ cart }) => {
       onSuccess: () => {
         queryClient.invalidateQueries([CART_QUERY_KEY]);
       },
-      onError: (error, _, context) => {
+      onError: (__, _, context) => {
         queryClient.setQueryData([CART_QUERY_KEY], context.prev);
       }
     }
@@ -73,7 +73,7 @@ export const CartItem: React.FC<ItemProps> = ({ cart }) => {
       onSuccess: () => {
         queryClient.invalidateQueries([CART_QUERY_KEY]);
       },
-      onError: (error, _, context) => {
+      onError: (__, _, context) => {
         queryClient.setQueryData([CART_QUERY_KEY], context.prev);
       }
     }

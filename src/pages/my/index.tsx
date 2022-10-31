@@ -1,25 +1,8 @@
-import styled from '@emotion/styled';
-import { Button } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import Image from 'next/image';
 import { OrderDetailItem } from 'components';
-import { Cart, OrderItem, Orders, products } from '@prisma/client';
-import React, { useEffect, useMemo, useState } from 'react';
-import { css } from '@emotion/react';
-import {
-  blurDataURL,
-  CART_QUERY_KEY,
-  CATEGORY_NAME,
-  ORDER_QUERY_KEY
-} from 'const';
-import { useRouter } from 'next/router';
-
-const Row = styled.div`
-  display: flex;
-  * ~ * {
-    margin-left: auto;
-  }
-`;
+import { OrderItem, Orders } from '@prisma/client';
+import React, { useState } from 'react';
+import { CART_QUERY_KEY, ORDER_QUERY_KEY } from 'const';
 
 export interface OrderItemDetailProps extends OrderItem {
   name: string;
@@ -31,7 +14,6 @@ export interface OrderDetailProps extends Orders {
 }
 
 const MyPage = () => {
-  const router = useRouter();
   const queryClient = useQueryClient();
 
   const [selectId, setSelectId] = useState('');

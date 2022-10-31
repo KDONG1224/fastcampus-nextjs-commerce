@@ -1,4 +1,4 @@
-import { Button, Slider } from '@mantine/core';
+import { Slider } from '@mantine/core';
 import { AutoSizeImage, CustomEditor } from 'components';
 import { convertFromRaw, convertToRaw, EditorState } from 'draft-js';
 import { useRouter } from 'next/router';

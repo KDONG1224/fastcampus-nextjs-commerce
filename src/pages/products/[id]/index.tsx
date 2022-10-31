@@ -2,18 +2,24 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Carousel from 'nuka-carousel';
 
-import { CART_QUERY_KEY, CommnetItem, Count, CustomEditor } from 'components';
+import { CommnetItem, Count, CustomEditor } from 'components';
 import { useRouter } from 'next/router';
 import { convertFromRaw, EditorState } from 'draft-js';
 
 import { GetServerSideProps } from 'next';
 import { Cart, Comment, OrderItem, products } from '@prisma/client';
 import { format } from 'date-fns';
-import { CATEGORY_NAME, ORDERITEM_QUERY_KEY, WISHLIST_QUETY_KEY } from 'const';
+import {
+  CART_QUERY_KEY,
+  CATEGORY_NAME,
+  ORDERITEM_QUERY_KEY,
+  WISHLIST_QUETY_KEY
+} from 'const';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@mantine/core';
 import { IconHeart, IconHeartbeat, IconShoppingCart } from '@tabler/icons';
 import { useSession } from 'next-auth/react';
+import Head from 'next/head';
 
 export interface CommentItemType extends Comment, OrderItem {}
 interface ProductsV2DetailProps {
@@ -48,7 +54,7 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({
       .then((data) => data.items)
   );
 
-  const { mutate, isLoading } = useMutation<unknown, unknown, string, any>(
+  const { mutate } = useMutation<unknown, unknown, string, any>(
     (pid) =>
       fetch('/api/update-wishlist', {
         method: 'POST',
@@ -75,7 +81,7 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({
       onSuccess: () => {
         queryClient.invalidateQueries([WISHLIST_QUETY_KEY]);
       },
-      onError: (error, _, context) => {
+      onError: (__, _, context) => {
         queryClient.setQueryData([WISHLIST_QUETY_KEY], context.prev);
       }
     }
@@ -160,6 +166,13 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({
     <>
       {product !== null && productId !== null ? (
         <div className="flex flex-row">
+          <Head>
+            <title>Kdong-Commerce {product.name}</title>
+            <meta
+              name="description"
+              content="Fastcampus Kdong Commerce Service"
+            />
+          </Head>
           <div style={{ maxWidth: 600, marginRight: 52 }}>
             <Carousel
               animation="fade"
@@ -192,11 +205,14 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({
             )}
 
             <div>
-              <p className="text-2xl font-semibold">후기</p>
-              {comments &&
+              <p className="text-2xl font-semibold mb-2">후기</p>
+              {comments.length > 0 ? (
                 comments.map((comment, idx) => (
                   <CommnetItem key={idx} comment={comment} />
-                ))}
+                ))
+              ) : (
+                <div className="text-sm text-zinc-400">후기가 없습니다.</div>
+              )}
             </div>
           </div>
           <div
@@ -319,16 +335,18 @@ const ProductsV2Detail: React.FC<ProductsV2DetailProps> = ({
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const product = await fetch(
-    `http://localhost:3000/api/get-product?id=${context.params?.id}`
+    `${process.env.NEXTAUTH_URL}/api/get-product?id=${context.params?.id}`
   )
     .then((res) => res.json())
     .then((data) => data.items);
 
   const comments = await fetch(
-    `http://localhost:3000/api/get-comments?productId=${context.params?.id}`
+    `${process.env.NEXTAUTH_URL}/api/get-comments?productId=${context.params?.id}`
   )
     .then((res) => res.json())
     .then((data) => data.items);
+
+  console.log('== comments == : ', comments);
 
   return {
     props: {

@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { useQuery } from '@tanstack/react-query';
 import { blurDataURL, CATEGORY_NAME } from 'const';
 import { useRouter } from 'next/router';
