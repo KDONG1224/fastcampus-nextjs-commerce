@@ -21,6 +21,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     session: async ({ session, user }) => {
       session.id = user.id;
+
+      console.log('=== session === : ', session);
+
       return Promise.resolve(session);
     }
   },

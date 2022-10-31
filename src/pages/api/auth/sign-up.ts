@@ -9,6 +9,9 @@ async function signUp(credential: string) {
   const decoded: { name: string; email: string; picture: string } =
     jwtDecode(credential);
 
+  console.log('== credential == : ', credential);
+  console.log('== decoded == : ', decoded);
+
   try {
     const user = await prisma.user.upsert({
       where: {
@@ -24,6 +27,9 @@ async function signUp(credential: string) {
         image: decoded.picture
       }
     });
+
+    console.log('== user == : ', user);
+
     return user;
   } catch (error) {
     console.error(error);
